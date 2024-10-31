@@ -3,16 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Museum Robot Control</title>
+    <title>Museum Guide Robot</title>
     <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
-    <h1>Museum Robot Control</h1>
+    <h1>Museum Guide Robot</h1>
     
-    <!-- Buttons for selecting exhibits -->
-    <button onclick="navigateToExhibit('A')">Go to Exhibit A</button>
-    <button onclick="navigateToExhibit('B')">Go to Exhibit B</button>
-    <button onclick="navigateToExhibit('C')">Go to Exhibit C</button>
+    <div class="main-menu">
+        <button onclick="showSection('language')">Language</button>
+        <button onclick="showSection('exhibits')">Exhibits</button>
+        <button onclick="showSection('accessibility')">Accessibility</button>
+        <button onclick="showSection('about')">About</button>
+    </div>
+
+    <div id="language-section" class="section hidden">
+        <h2>Select Language</h2>
+        <button onclick="setLanguage('en')">English</button>
+        <button onclick="setLanguage('es')">Español</button>
+        <button onclick="setLanguage('fr')">Français</button>
+    </div>
+
+    <div id="exhibits-section" class="section hidden">
+        <h2>Select Exhibit</h2>
+        <button onclick="navigateToExhibit('A')">Exhibit A</button>
+        <button onclick="navigateToExhibit('B')">Exhibit B</button>
+        <button onclick="navigateToExhibit('C')">Exhibit C</button>
+        <button onclick="navigateToExhibit('D')">Exhibit D</button>
+    </div>
+
+    <div id="accessibility-section" class="section hidden">
+        <h2>Accessibility Options</h2>
+        <button onclick="toggleFontSize()">Increase Font Size</button>
+        <button onclick="toggleContrast()">High Contrast</button>
+    </div>
+
+    <div id="about-section" class="section hidden">
+        <h2>About</h2>
+        <p>Museum Guide Robot helps visitors navigate through exhibits efficiently.</p>
+        <p>Connect the robot via USB to begin your tour.</p>
+    </div>
 
     <!-- Output status -->
     <p id="status">Not connected to the robot.</p>

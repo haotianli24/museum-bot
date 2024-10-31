@@ -1,15 +1,42 @@
 let port;
 let writer;
 let isConnected = false;
+let currentLanguage = 'en';
+let isLargeText = false;
+let isHighContrast = false;
+
+// Show selected section and hide others
+function showSection(sectionName) {
+    const sections = ['language', 'exhibits', 'accessibility', 'about'];
+    sections.forEach(section => {
+        const element = document.getElementById(`${section}-section`);
+        element.classList.toggle('hidden', section !== sectionName);
+    });
+}
+
+// Language selection
+function setLanguage(lang) {
+    currentLanguage = lang;
+    document.getElementById("status").innerText = `Language set to: ${lang.toUpperCase()}`;
+}
+
+// Accessibility functions
+function toggleFontSize() {
+    isLargeText = !isLargeText;
+    document.body.classList.toggle('large-text', isLargeText);
+}
+
+function toggleContrast() {
+    isHighContrast = !isHighContrast;
+    document.body.classList.toggle('high-contrast', isHighContrast);
+}
 
 // Request access to the serial port when the page loads
 async function connectSerial() {
     try {
-        // Ask user to select the Arduino's serial port
         port = await navigator.serial.requestPort();
-        // Open the serial port at a baud rate of 9600
         await port.open({ baudRate: 9600 });
-        writer = port.writable.getWriter(); // Create a writer to send data to the port
+        writer = port.writable.getWriter();
         document.getElementById("status").innerText = "Connected to the robot!";
         isConnected = true;
     } catch (error) {
@@ -26,12 +53,18 @@ async function navigateToExhibit(exhibit) {
     }
 
     try {
-        // Prepare the command to send ('A', 'B', 'C', etc.)
-        const command = new TextEncoder().encode(exhibit + "\n");
-        await writer.write(command); // Send the command to the Arduino
-        alert(`Navigating to Exhibit ${exhibit}`);
+        // Send command to move forward for 2 seconds
+        const command = new TextEncoder().encode(`MOVE_${exhibit}\n`);
+        await writer.write(command);
+        document.getElementById("status").innerText = `Moving to Exhibit ${exhibit}...`;
+        
+        // Wait for 2 seconds
+        setTimeout(() => {
+            document.getElementById("status").innerText = `Arrived at Exhibit ${exhibit}`;
+        }, 2000);
     } catch (error) {
         console.error("Error sending command:", error);
+        document.getElementById("status").innerText = "Error moving to exhibit";
     }
 }
 
