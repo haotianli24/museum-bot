@@ -34,14 +34,33 @@ function toggleContrast() {
 // Request access to the serial port when the page loads
 async function connectSerial() {
     try {
-        port = await navigator.serial.requestPort();
-        await port.open({ baudRate: 9600 });
+        // Check if running on Android Chrome
+        if (!navigator.usb && !navigator.serial) {
+            throw new Error("WebUSB not supported. Please use Chrome for Android.");
+        }
+        
+        // Try WebUSB first (Android)
+        if (navigator.usb) {
+            const device = await navigator.usb.requestDevice({
+                filters: [{ vendorId: 0x2341 }] // Arduino vendor ID
+            });
+            await device.open();
+            await device.selectConfiguration(1);
+            await device.claimInterface(0);
+            port = device;
+        } else {
+            // Fallback to Web Serial API
+            port = await navigator.serial.requestPort();
+            await port.open({ baudRate: 9600 });
+        }
+        
         writer = port.writable.getWriter();
         document.getElementById("status").innerText = "Connected to the robot!";
         isConnected = true;
     } catch (error) {
         console.error("Error connecting to serial port:", error);
-        document.getElementById("status").innerText = "Failed to connect. Please check USB connection.";
+        document.getElementById("status").innerText = 
+            "Failed to connect. Please ensure USB debugging is enabled and the cable is connected.";
     }
 }
 
